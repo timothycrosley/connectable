@@ -1,24 +1,23 @@
-'''
-    Connectable.py
+'''connectable/Connectable.py
 
-    Connectable enables child object to create dynamic connections
-    (via signals/slots) at run-time. Inspired by QT's signal / slot mechanism
+   Connectable enables child object to create dynamic connections
+   (via signals/slots) at run-time. Inspired by QT's signal / slot mechanism
 
-    Copyright (C) 2015  Timothy Edmund Crosley
+   Copyright (C) 2015  Timothy Edmund Crosley
 
-    This program is free software; you can redistribute it and/or
-    modify it under the terms of the GNU General Public License
-    as published by the Free Software Foundation; either version 2
-    of the License, or (at your option) any later version.
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 '''
 
 
@@ -30,58 +29,63 @@ class Connectable(object):
     def __init__(self):
         self.connections = None
 
-    def emit(self, signal, value=None):
+    def emit(self, signal, value=None, gather=False):
         """Emits a signal, causing all slot methods connected with the signal to be called (optionally w/ related value)
 
            signal: the name of the signal to emit, must be defined in the classes 'signals' list.
            value: the value to pass to all connected slot methods.
+           gather: if set, causes emit to return a list of all slot results
         """
-        results = []
+        results = [] if gather else True
         if self.connections and signal in self.connections:
             for obj, conditions in self.connections[signal].items():
 
                 for condition, values in conditions.items():
-                    if condition is None or condition == value:
-                        for overrideValue, slots in values.items():
-                            if overrideValue is not None:
-                                usedValue = overrideValue
-                                if isinstance(overrideValue, str):
-                                    usedValue = usedValue.replace('${value}', str(value))
+                    if condition is None or condition == value or (callable(condition) and condition(value)):
+                        for override_value, slots in values.items():
+                            if override_value is not None:
+                                if callable(override_value):
+                                    used_value = override_value(value)
+                                elif isinstance(override_value, str):
+                                    used_value = override_value.format(value=value)
+                                else:
+                                    used_value = override_value
                             else:
-                                usedValue = value
+                                used_value = value
 
                             for slot in slots:
                                 if not hasattr(obj, slot):
-                                    print(obj.__class__.__name__ +
-                                            " slot not defined: " + slot)
+                                    print("WARNING: {0} slot not defined: {1}".format(obj.__class__.__name__, slot))
                                     return False
 
-                                slotMethod = getattr(obj, slot)
-                                if usedValue is not None:
-                                    if(acceptsArguments(slotMethod, 1)):
-                                        results.append(slotMethod(usedValue))
-                                    elif(acceptsArguments(slotMethod, 0)):
-                                        results.append(slotMethod())
+                                slot_method = getattr(obj, slot)
+                                if used_value is not None:
+                                    if(accept_arguments(slot_method, 1)):
+                                        result = slot_method(used_value)
+                                    elif(accept_arguments(slot_method, 0)):
+                                        result = slot_method()
                                     else:
-                                        results.append('')
-
+                                        result = ''
                                 else:
-                                    results.append(slotMethod())
+                                    result = slot_method()
+
+                                if gather:
+                                    results.append(slot_method())
 
         return results
 
-    def connect(self, signal, condition, receiver, slot, value=None):
+    def connect(self, signal, receiver, slot, condition=None, value=None):
         """Defines a connection between this objects signal and another objects slot
 
            signal: the signal this class will emit, to cause the slot method to be called.
-           condition: only call the slot method if the value emitted matches this condition.
            receiver: the object containing the slot method to be called.
            slot: the name of the slot method to call.
+           condition: only call the slot method if the value emitted matches this condition.
            value: an optional value override to pass into the slot method as the first variable.
         """
         if not signal in self.signals:
-            print("%(name)s is trying to connect a slot to an undefined signal: %(signal)s" %
-                      {'name':self.__class__.__name__, 'signal':str(signal)})
+            print("WARNING: {0} is trying to connect a slot to an undefined signal: {1}".format(self.__class__.__name__,
+                                                                                       str(signal)))
             return
 
         if self.connections is None:
@@ -114,7 +118,7 @@ class Connectable(object):
             self.connections = None
 
 
-def acceptsArguments(method, number_of_arguments=1):
+def accept_arguments(method, number_of_arguments=1):
     """Returns True if the given method will accept the given number of arguments
 
        method: the method to perform introspection on
