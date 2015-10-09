@@ -21,6 +21,8 @@
 '''
 from connectable import Connectable
 
+function_called = False
+
 
 class Value(Connectable):
     signals = ['valueChanged']
@@ -38,6 +40,10 @@ class Value(Connectable):
 
     def tooManyParmsToBeSlot(self, param1, param2):
         pass
+
+
+def set_value_function(value):
+    globals()['function_called'] = True
 
 
 def test_incorrectSignalSlotConnections():
@@ -64,10 +70,12 @@ def test_connectWithoutCondition():
     value1.disconnect()
 
     #test with value overide
-    value1.connect('valueChanged', None,
-                        value2, 'setValue', 'I changed the value')
+    value1.connect('valueChanged', None, value2, 'setValue', 'I changed the value')
+    value1.connect('valueChanged', None, value2, 'call_function', 'I changed the value')
+    value2.call_function = set_value_function
     value1.setValue("This is a test")
     assert value2.value == "I changed the value"
+    assert function_called == True
 
 
 def test_connectWithCondition():
