@@ -1,6 +1,6 @@
 """connectable/connectable.py
 
- simple, yet powerful, implementation of QTs signal / slots pattern for Python3
+A simple, yet powerful, implementation of QTs signal / slots pattern for Python3
 
 Copyright (C) 2015  Timothy Edmund Crosley
 

@@ -63,7 +63,7 @@ except (IOError, ImportError, OSError, RuntimeError):
 
 setup(name='hug',
       version='0.0.1',
-      description=' simple, yet powerful, implementation of QTs signal / slots pattern for Python3',
+      description='A simple, yet powerful, implementation of QTs signal / slots pattern for Python3',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
