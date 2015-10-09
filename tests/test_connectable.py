@@ -50,13 +50,13 @@ def test_incorrectSignalSlotConnections():
     value1, value2 = (Value(1), Value(2))
 
     #emit fake signal
-    assert value1.emit("fake signal") == []
+    assert value1.emit("fake signal") == True
 
     #connect using fake signal
-    assert value1.connect("fake signal", None, value1, 'set_value') is None
+    assert value1.connect("fake signal", value1, 'set_value') is None
 
     #connect to fake slot
-    value1.connect("valueChanged", None, value1, 'fake slot')
+    value1.connect("valueChanged", value1, 'fake slot')
     assert value1.emit('valueChanged') is False
 
 
@@ -64,14 +64,14 @@ def test_connectWithoutCondition():
     value1, value2 = (Value(1), Value(2))
 
     #test without value overide
-    value1.connect('valueChanged', None, value2, 'set_value')
+    value1.connect('valueChanged', value2, 'set_value')
     value1.set_value("This is a test")
     assert value2.value == "This is a test"
     value1.disconnect()
 
     #test with value overide
-    value1.connect('valueChanged', None, value2, 'set_value', 'I changed the value')
-    value1.connect('valueChanged', None, value2, 'call_function', 'I changed the value')
+    value1.connect('valueChanged', value2, 'set_value', 'I changed the value')
+    value1.connect('valueChanged', value2, 'call_function', 'I changed the value')
     value2.call_function = set_value_function
     value1.set_value("This is a test")
     assert value2.value == "I changed the value"
@@ -82,7 +82,7 @@ def test_connectWithCondition():
     value1, value2 = (Value(1), Value(2))
 
     #test without value overide
-    value1.connect('valueChanged', 'Hello', value2, 'set_value')
+    value1.connect('valueChanged', value2, 'set_value', requires='Hello')
     value1.set_value('Goodbye')
     assert value2.value == 2
     value1.set_value('Hello')
@@ -90,42 +90,41 @@ def test_connectWithCondition():
     value1.disconnect()
 
     #test with value overide
-    value1.connect('valueChanged', 'Hello',
-                        value2, 'set_value', 'Goodbye')
+    value1.connect('valueChanged', value2, 'set_value', requires='Hello', transform='Goodbye')
     value1.set_value('Goodbye')
     assert value2.value == 'Hello'
     value1.set_value('Hello')
     assert value2.value == 'Goodbye'
 
     #Test on slot that takes no arguments
-    value1.connect('valueChanged', 'Die!!', value2, 'clearValue')
-    assert value1.emit('valueChanged', 'Die!!') == [None]
-    value1.connect('valueChanged', None, value2, 'clearValue')
-    assert value1.emit('valueChanged') == [None]
+    value1.connect('valueChanged', value2, 'clearValue', requires='Die!!')
+    assert value1.emit('valueChanged', 'Die!!', gather=True) == [None]
+    value1.connect('valueChanged', value2, 'clearValue')
+    assert value1.emit('valueChanged', gather=True) == [None]
     value1.disconnect()
 
     #Test method with too many params to be a slot
-    value1.connect('valueChanged', 'False', value2, 'too_many_params_to_be_slot')
-    assert value1.emit('valueChanged', 'False') == ['']
+    value1.connect('valueChanged', value2, 'too_many_params_to_be_slot', requires='False')
+    assert value1.emit('valueChanged', 'False', gather=True) == ['']
 
 
 def test_disconnect():
     value1, value2 = (Value(1), Value(2))
 
-    value1.connect('valueChanged', None, value2, 'set_value')
+    value1.connect('valueChanged', value2, 'set_value')
     value1.set_value('It changes the value')
     assert value2.value == 'It changes the value'
 
-    value1.disconnect('valueChanged', None, value2, 'set_value')
+    value1.disconnect('valueChanged', value2, 'set_value')
     value1.set_value('But not anymore')
     assert value2.value == 'It changes the value'
 
-    value1.connect('valueChanged', None, value2, 'set_value')
-    value1.disconnect('valueChanged', None, value2)
+    value1.connect('valueChanged', value2, 'set_value')
+    value1.disconnect('valueChanged', value2)
     value1.set_value('Still Wont')
     assert value2.value == 'It changes the value'
 
-    value1.connect('valueChanged', None, value2, 'set_value')
+    value1.connect('valueChanged', value2, 'set_value')
     value1.disconnect('valueChanged')
     value1.set_value('Still Wont')
     assert value2.value == 'It changes the value'
