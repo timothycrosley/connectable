@@ -1,6 +1,8 @@
 ![connectable](https://raw.github.com/timothycrosley/connectable/develop/logo.png)
 ===================
 
+[![Join the chat at https://gitter.im/timothycrosley/connectable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/connectable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![PyPI version](https://badge.fury.io/py/connectable.svg)](http://badge.fury.io/py/connectable)
 [![Build Status](https://travis-ci.org/timothycrosley/connectable.svg?branch=master)](https://travis-ci.org/timothycrosley/connectable)
 [![Coverage Status](https://coveralls.io/repos/timothycrosley/connectable/badge.svg?branch=master&service=github)](https://coveralls.io/github/timothycrosley/connectable?branch=master)
