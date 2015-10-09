@@ -20,6 +20,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 '''
+
+
 class Connectable(object):
     __slots__ = ("connections")
 
@@ -29,16 +31,15 @@ class Connectable(object):
         self.connections = None
 
     def emit(self, signal, value=None):
-        """
-            Calls all slot methods connected with signal,
-            optionally passing in a value
+        """Emits a signal, causing all slot methods connected with the signal to be called (optionally w/ related value)
 
-            signal - the name of the signal to emit, must be defined in the classes 'signals' list.
-            value - the value to pass to all connected slot methods.
+           signal: the name of the signal to emit, must be defined in the classes 'signals' list.
+           value: the value to pass to all connected slot methods.
         """
         results = []
         if self.connections and signal in self.connections:
             for obj, conditions in self.connections[signal].items():
+
                 for condition, values in conditions.items():
                     if condition is None or condition == value:
                         for overrideValue, slots in values.items():
@@ -70,15 +71,13 @@ class Connectable(object):
         return results
 
     def connect(self, signal, condition, receiver, slot, value=None):
-        """
-            Defines a connection between this objects signal
-            and another objects slot:
+        """Defines a connection between this objects signal and another objects slot
 
-            signal - the signal this class will emit, to cause the slot method to be called.
-            condition - only call the slot method if the value emitted matches this condition.
-            receiver - the object containing the slot method to be called.
-            slot - the name of the slot method to call.
-            value - an optional value override to pass into the slot method as the first variable.
+           signal: the signal this class will emit, to cause the slot method to be called.
+           condition: only call the slot method if the value emitted matches this condition.
+           receiver: the object containing the slot method to be called.
+           slot: the name of the slot method to call.
+           value: an optional value override to pass into the slot method as the first variable.
         """
         if not signal in self.signals:
             print("%(name)s is trying to connect a slot to an undefined signal: %(signal)s" %
@@ -96,15 +95,13 @@ class Connectable(object):
 
     def disconnect(self, signal=None, condition=None,
                    obj=None, slot=None, value=None):
-        """
-            Removes connection(s) between this objects signal
-            and connected slot(s):
+        """Removes connection(s) between this objects signal and connected slot(s)
 
-            signal - the signal this class will emit, to cause the slot method to be called.
-            condition - only call the slot method if the value emitted matches this condition.
-            receiver - the object containing the slot method to be called.
-            slot - the name of the slot method to call.
-            value - an optional value override to pass into the slot method as the first variable.
+           signal: the signal this class will emit, to cause the slot method to be called.
+           condition: only call the slot method if the value emitted matches this condition.
+           receiver: the object containing the slot method to be called.
+           slot: the name of the slot method to call.
+           value: an optional value override to pass into the slot method as the first variable.
         """
         if slot:
             connection = self.connections[signal][obj][condition][value]
@@ -118,10 +115,10 @@ class Connectable(object):
 
 
 def acceptsArguments(method, numberOfArguments):
-    """
-        Returns True if the given method will accept the given number of arguments:
-            method - the method to perform introspection on
-            numberOfArguments - the numberOfArguments
+    """Returns True if the given method will accept the given number of arguments
+
+       method: the method to perform introspection on
+       numberOfArguments: the numberOfArguments
     """
     if 'method' in method.__class__.__name__:
         numberOfArguments += 1
@@ -131,6 +128,7 @@ def acceptsArguments(method, numberOfArguments):
     elif method.__class__.__name__ == 'function':
         funcDefaults = getattr(method, 'func_defaults', getattr(method, '__defaults__'))
         numberOfDefaults = funcDefaults and len(funcDefaults) or 0
+
     coArgCount = getattr(method, 'func_code', getattr(method, '__code__')).co_argcount
     if(coArgCount >= numberOfArguments and coArgCount - numberOfDefaults <= numberOfArguments):
         return True

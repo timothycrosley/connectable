@@ -31,14 +31,14 @@ class Value(Connectable):
         super(Value, self).__init__()
         self.value = value
 
-    def setValue(self, value):
+    def set_value(self, value):
         self.value = value
         self.emit('valueChanged', value)
 
     def clearValue(self):
         self.value = ""
 
-    def tooManyParmsToBeSlot(self, param1, param2):
+    def too_many_params_to_be_slot(self, param1, param2):
         pass
 
 
@@ -53,7 +53,7 @@ def test_incorrectSignalSlotConnections():
     assert value1.emit("fake signal") == []
 
     #connect using fake signal
-    assert value1.connect("fake signal", None, value1, 'setValue') is None
+    assert value1.connect("fake signal", None, value1, 'set_value') is None
 
     #connect to fake slot
     value1.connect("valueChanged", None, value1, 'fake slot')
@@ -64,16 +64,16 @@ def test_connectWithoutCondition():
     value1, value2 = (Value(1), Value(2))
 
     #test without value overide
-    value1.connect('valueChanged', None, value2, 'setValue')
-    value1.setValue("This is a test")
+    value1.connect('valueChanged', None, value2, 'set_value')
+    value1.set_value("This is a test")
     assert value2.value == "This is a test"
     value1.disconnect()
 
     #test with value overide
-    value1.connect('valueChanged', None, value2, 'setValue', 'I changed the value')
+    value1.connect('valueChanged', None, value2, 'set_value', 'I changed the value')
     value1.connect('valueChanged', None, value2, 'call_function', 'I changed the value')
     value2.call_function = set_value_function
-    value1.setValue("This is a test")
+    value1.set_value("This is a test")
     assert value2.value == "I changed the value"
     assert function_called == True
 
@@ -82,19 +82,19 @@ def test_connectWithCondition():
     value1, value2 = (Value(1), Value(2))
 
     #test without value overide
-    value1.connect('valueChanged', 'Hello', value2, 'setValue')
-    value1.setValue('Goodbye')
+    value1.connect('valueChanged', 'Hello', value2, 'set_value')
+    value1.set_value('Goodbye')
     assert value2.value == 2
-    value1.setValue('Hello')
+    value1.set_value('Hello')
     assert value2.value == 'Hello'
     value1.disconnect()
 
     #test with value overide
     value1.connect('valueChanged', 'Hello',
-                        value2, 'setValue', 'Goodbye')
-    value1.setValue('Goodbye')
+                        value2, 'set_value', 'Goodbye')
+    value1.set_value('Goodbye')
     assert value2.value == 'Hello'
-    value1.setValue('Hello')
+    value1.set_value('Hello')
     assert value2.value == 'Goodbye'
 
     #Test on slot that takes no arguments
@@ -105,27 +105,27 @@ def test_connectWithCondition():
     value1.disconnect()
 
     #Test method with too many params to be a slot
-    value1.connect('valueChanged', 'False', value2, 'tooManyParmsToBeSlot')
+    value1.connect('valueChanged', 'False', value2, 'too_many_params_to_be_slot')
     assert value1.emit('valueChanged', 'False') == ['']
 
 
 def test_disconnect():
     value1, value2 = (Value(1), Value(2))
 
-    value1.connect('valueChanged', None, value2, 'setValue')
-    value1.setValue('It changes the value')
+    value1.connect('valueChanged', None, value2, 'set_value')
+    value1.set_value('It changes the value')
     assert value2.value == 'It changes the value'
 
-    value1.disconnect('valueChanged', None, value2, 'setValue')
-    value1.setValue('But not anymore')
+    value1.disconnect('valueChanged', None, value2, 'set_value')
+    value1.set_value('But not anymore')
     assert value2.value == 'It changes the value'
 
-    value1.connect('valueChanged', None, value2, 'setValue')
+    value1.connect('valueChanged', None, value2, 'set_value')
     value1.disconnect('valueChanged', None, value2)
-    value1.setValue('Still Wont')
+    value1.set_value('Still Wont')
     assert value2.value == 'It changes the value'
 
-    value1.connect('valueChanged', None, value2, 'setValue')
+    value1.connect('valueChanged', None, value2, 'set_value')
     value1.disconnect('valueChanged')
-    value1.setValue('Still Wont')
+    value1.set_value('Still Wont')
     assert value2.value == 'It changes the value'
