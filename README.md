@@ -73,12 +73,13 @@ Then any Python method or function can be connected that action, via the connect
 my_object = MyConnectable()
 my_object.connect('something_changed', print)
 ```
+If you emitted a value and the provided slot method accepts one it will be passed as the first argument to that method.
 
 
 Unique Features of Connectable
 ===================
 
-Connectable adds some additional benifits over a vanilla port of the signal slots pattern
+Connectable adds some additional benifits over a vanilla port of the signal / slots pattern
 - You can pass a custom value to the slot:
 ```py
     order_button.connect('clicked', status_label.set_text, 'Order Submitted Succesfully')
