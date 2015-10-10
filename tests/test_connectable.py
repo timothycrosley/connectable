@@ -69,12 +69,24 @@ def test_connect_without_condition():
     assert value2.value == "This is a test"
     value1.disconnect()
 
-    #test with value overide
+    #test with value override
     value1.connect('valueChanged', value2.set_value, 'I changed the value')
     value1.connect('valueChanged', set_value_function)
     value1.set_value("This is a test")
     assert value2.value == "I changed the value"
     assert function_called == True
+
+    #test with int value override
+    value1.disconnect()
+    value1.connect('valueChanged', value2.set_value, 2)
+    value1.set_value("This is a test")
+    assert value2.value == 2
+
+    #test with function value override
+    value1.disconnect()
+    value1.connect('valueChanged', value2.set_value, lambda value: value + ' for humanity!')
+    value1.set_value("This is a test")
+    assert value2.value == 'This is a test for humanity!'
 
 
 def test_connect_with_condition():
@@ -96,14 +108,14 @@ def test_connect_with_condition():
     value1.set_value('Hello')
     assert value2.value == 'Goodbye'
 
-    #Test on slot that takes no arguments
+    #test on slot that takes no arguments
     value1.connect('valueChanged', value2.clear_value, requires='Die!!')
     assert value1.emit('valueChanged', 'Die!!', gather=True) == [None]
     value1.connect('valueChanged', value2.clear_value)
     assert value1.emit('valueChanged', gather=True) == [None]
     value1.disconnect()
 
-    #Test method with too many params to be a slot
+    #test method with too many params to be a slot
     value1.connect('valueChanged', value2.too_many_params_to_be_slot, requires='False')
     assert value1.emit('valueChanged', 'False', gather=True) == ['']
 
