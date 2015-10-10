@@ -48,6 +48,48 @@ Hi Tim, this is Amanda
 Hi you horrible imposter, this is The *Real* Timothy
 ```
 
+QT has a pretty good [write up](http://doc.qt.io/qt-4.8/signalsandslots.html) on the general merits of a signal / slots approach.
+
+
+Making an object *Connectable*
+===================
+
+To make an object Connectable, all you have to do is inherit from the Connectable class and define your signals at the class level:
+```py
+from connectable import Connectable
+
+MyConnectable(Connectable):
+    signals = ['something_changed']
+```
+Then to signal any of your defined signals, simply emit the signal name, optionally with a value:
+```py
+
+def action(self):
+    self.emit('something_changed', 'Forever.')
+    # or simply self.emit('something_changed')
+```
+Then any Python method or function can be connected that action, via the connect command:
+```py
+my_object = MyConnectable()
+my_object.connect('something_changed', print)
+```
+
+
+Unique Features of Connectable
+===================
+
+Connectable adds some additional benifits over a vanilla port of the signal slots pattern
+- You can pass a custom value to the slot:
+```py
+    order_button.connect('clicked', status_label.set_text, 'Order Submitted Succesfully')
+```
+- You can add a conditional to the connection:
+```py
+    edit_mode_button.connect('toggled', input_field.set_editable, True, condition=False)
+    edit_mode_button.connect('toggled', input_field.set_editable, False, condition=True)
+```
+
+
 Installing connectable
 ===================
 
