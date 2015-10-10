@@ -1,0 +1,3 @@
+[report]
+include = connectable/*.py
+exclude_lines = if __name__ == .__main__.:
