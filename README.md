@@ -1,4 +1,5 @@
 ![connectable](https://raw.github.com/timothycrosley/connectable/develop/logo.png)
+A simple, yet powerful, implementation of QT's signal / slots pattern for Python3
 ===================
 
 [![PyPI version](https://badge.fury.io/py/connectable.svg)](http://badge.fury.io/py/connectable)
@@ -7,10 +8,45 @@
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.python.org/pypi/connectable/)
 [![Join the chat at https://gitter.im/timothycrosley/connectable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/connectable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A simple, yet powerful, implementation of QT's signal / slots pattern for Python3
+Connectable enables you to quickly and effeciently attach actions preformed by one object, to actions of another:
 
-[![connectable Example](https://raw.github.com/timothycrosley/connectable/develop/example.gif)](https://github.com/timothycrosley/connectable/blob/develop/examples/example.py)
+```py
+from connectable import Connectable
 
+class Person(Connectable):
+    signals = ('says_hello')
+
+    def __init__(self, name):
+        self.name = name
+
+    def say_hello(self, to=None):
+        if to:
+            print("Hi {to}, this is {name}".format(to=to, name=self.name))
+        else:
+            print("Hi! This is {name}".format(name=self.name))
+        self.emit('says_hello', self.name)
+
+speaker = Person('Tim')
+room = (Person('Amanda'), Person('Bob'), Person('Ted'), Person('Sue'))
+heckler = Person('The *Real* Timothy')
+
+for person in room:
+    speaker.connect('says_hello', person.say_hello)
+speaker.connect('says_hello', heckler.say_hello, transform='you horrible imposter')
+
+speaker.say_hello()
+```
+
+Would output:
+
+```bash
+Hi! This is Tim
+Hi Tim, this is Bob
+Hi Tim, this is Sue
+Hi Tim, this is Ted
+Hi Tim, this is Amanda
+Hi you horrible imposter, this is The *Real* Timothy
+```
 
 Installing connectable
 ===================
@@ -27,10 +63,11 @@ Ideally, within a virtual environment.
 Why connectable?
 ===================
 
- simple, yet powerful, implementation of QTs signal / slots pattern for Python3
+I've always loved the simplicity and expressiveness of QT's take on the observer pattern, and wanted to bring a similar
+experience to Python.
 
 --------------------------------------------
 
-Thanks and I hope you find connectable helpful!
+Thanks and I hope you find this *connection* helpful!
 
 ~Timothy Crosley

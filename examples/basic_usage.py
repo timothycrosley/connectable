@@ -22,8 +22,7 @@ heckler = Person('The *Real* Timothy')
 
 for person in room:
     speaker.connect('says_hello', person.say_hello)
-
-speaker.connect('says_hello', heckler.say_hello, 'you horrible imposter')
+speaker.connect('says_hello', heckler.say_hello, transform='you horrible imposter')
 
 speaker.say_hello()
 
