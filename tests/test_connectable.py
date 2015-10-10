@@ -77,13 +77,11 @@ def test_connect_without_condition():
     assert function_called == True
 
     #test with int value override
-    value1.disconnect()
     value1.connect('valueChanged', value2.set_value, 2)
     value1.set_value("This is a test")
     assert value2.value == 2
 
     #test with function value override
-    value1.disconnect()
     value1.connect('valueChanged', value2.set_value, lambda value: value + ' for humanity!')
     value1.set_value("This is a test")
     assert value2.value == 'This is a test for humanity!'

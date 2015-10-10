@@ -40,7 +40,7 @@ class Connectable(object):
         if self.connections and signal in self.connections:
             for requires, values in self.connections[signal].items():
                 if requires is None or requires == value or (callable(requires) and requires(value)):
-                    for transform, slots in values.items():
+                    for slot, transform in values.items():
                         if transform is not None:
                             if callable(transform):
                                 used_value = transform(value)
@@ -51,19 +51,18 @@ class Connectable(object):
                         else:
                             used_value = value
 
-                        for slot in slots:
-                            if used_value is not None:
-                                if(accept_arguments(slot, 1)):
-                                    result = slot(used_value)
-                                elif(accept_arguments(slot, 0)):
-                                    result = slot()
-                                else:
-                                    result = ''
-                            else:
+                        if used_value is not None:
+                            if(accept_arguments(slot, 1)):
+                                result = slot(used_value)
+                            elif(accept_arguments(slot, 0)):
                                 result = slot()
+                            else:
+                                result = ''
+                        else:
+                            result = slot()
 
-                            if gather:
-                                results.append(result)
+                        if gather:
+                            results.append(result)
 
         return results
 
@@ -85,9 +84,7 @@ class Connectable(object):
             self.connections = {}
         connection = self.connections.setdefault(signal, {})
         connection = connection.setdefault(requires, {})
-        connection = connection.setdefault(transform, [])
-        if not slot in connection:
-            connection.append(slot)
+        connection[slot] = transform
 
     def disconnect(self, signal=None, slot=None, transform=None, requires=None):
         """Removes connection(s) between this objects signal and connected slot(s)
@@ -99,8 +96,9 @@ class Connectable(object):
            requires: only call the slot method if the value emitted matches this requires
         """
         if slot:
-            connection = self.connections[signal][requires][transform]
-            connection.remove(slot)
+            self.connections[signal][requires].pop(slot, None)
+        elif requires is not None:
+            self.connections[signal].pop(requires, None)
         elif signal:
             self.connections.pop(signal, None)
         else:
