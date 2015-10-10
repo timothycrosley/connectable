@@ -92,7 +92,7 @@ def test_connect_with_condition():
     value1, value2 = (Value(1), Value(2))
 
     #test without value overide
-    value1.connect('valueChanged', value2.set_value, requires='Hello')
+    value1.connect('valueChanged', value2.set_value, condition='Hello')
     value1.set_value('Goodbye')
     assert value2.value == 2
     value1.set_value('Hello')
@@ -100,23 +100,23 @@ def test_connect_with_condition():
     value1.disconnect()
 
     #test with value overide
-    value1.connect('valueChanged', value2.set_value, requires='Hello', transform='Goodbye')
+    value1.connect('valueChanged', value2.set_value, condition='Hello', transform='Goodbye')
     value1.set_value('Goodbye')
     assert value2.value == 'Hello'
     value1.set_value('Hello')
     assert value2.value == 'Goodbye'
 
     #test on slot that takes no arguments
-    value1.connect('valueChanged', value2.clear_value, requires='Die!!')
+    value1.connect('valueChanged', value2.clear_value, condition='Die!!')
     assert value1.emit('valueChanged', 'Die!!', gather=True) == [None]
-    value1.disconnect('valueChanged', requires='Die!!')
+    value1.disconnect('valueChanged', condition='Die!!')
     assert value1.emit('valueChanged', 'Die!!', gather=True) == []
     value1.connect('valueChanged', value2.clear_value)
     assert value1.emit('valueChanged', gather=True) == [None]
     value1.disconnect()
 
     #test method with too many params to be a slot
-    value1.connect('valueChanged', value2.too_many_params_to_be_slot, requires='False')
+    value1.connect('valueChanged', value2.too_many_params_to_be_slot, condition='False')
     assert value1.emit('valueChanged', 'False', gather=True) == ['']
 
 

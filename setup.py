@@ -61,13 +61,13 @@ try:
 except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
-setup(name='hug',
+setup(name='connectable',
       version='0.0.1',
       description='A simple, yet powerful, implementation of QTs signal / slots pattern for Python3',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
-      url='https://github.com/timothycrosley/hug',
+      url='https://github.com/timothycrosley/connectable',
       license="MIT",
       # entry_points={
       #  'console_scripts': [
