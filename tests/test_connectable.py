@@ -109,6 +109,8 @@ def test_connect_with_condition():
     #test on slot that takes no arguments
     value1.connect('valueChanged', value2.clear_value, requires='Die!!')
     assert value1.emit('valueChanged', 'Die!!', gather=True) == [None]
+    value1.disconnect('valueChanged', requires='Die!!')
+    assert value1.emit('valueChanged', 'Die!!', gather=True) == []
     value1.connect('valueChanged', value2.clear_value)
     assert value1.emit('valueChanged', gather=True) == [None]
     value1.disconnect()
