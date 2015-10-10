@@ -15,7 +15,7 @@ from connectable import Connectable
 
 
 class Person(Connectable):
-    signals = ('says_hello')
+    signals = ('says_hello', )
 
     def __init__(self, name):
         self.name = name
