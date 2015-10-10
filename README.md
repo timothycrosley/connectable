@@ -68,7 +68,7 @@ def action(self):
     self.emit('something_changed', 'Forever.')
     # or simply self.emit('something_changed')
 ```
-Then any Python method or function can be connected that action, via the connect command:
+Then any Python method or function can be connected to that action, via the connect command:
 ```py
 my_object = MyConnectable()
 my_object.connect('something_changed', print)
