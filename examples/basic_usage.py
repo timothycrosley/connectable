@@ -15,7 +15,6 @@ class Person(Connectable):
         self.emit('says_hello', self.name)
 
 
-
 speaker = Person('Tim')
 room = (Person('Amanda'), Person('Bob'), Person('Ted'), Person('Sue'))
 heckler = Person('The *Real* Timothy')

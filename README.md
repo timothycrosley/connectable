@@ -13,6 +13,7 @@ Connectable enables you to quickly and effeciently attach actions preformed by o
 ```py
 from connectable import Connectable
 
+
 class Person(Connectable):
     signals = ('says_hello')
 
@@ -25,6 +26,7 @@ class Person(Connectable):
         else:
             print("Hi! This is {name}".format(name=self.name))
         self.emit('says_hello', self.name)
+
 
 speaker = Person('Tim')
 room = (Person('Amanda'), Person('Bob'), Person('Ted'), Person('Sue'))
