@@ -23,11 +23,7 @@
 
 class Connectable(object):
     __slots__ = ("connections")
-
     signals = ()
-
-    def __init__(self):
-        self.connections = None
 
     def emit(self, signal, value=None, gather=False):
         """Emits a signal, causing all slot methods connected with the signal to be called (optionally w/ related value)
@@ -37,7 +33,7 @@ class Connectable(object):
            gather: if set, causes emit to return a list of all slot results
         """
         results = [] if gather else True
-        if self.connections and signal in self.connections:
+        if hasattr(self, 'connections') and signal in self.connections:
             for requires, values in self.connections[signal].items():
                 if requires is None or requires == value or (callable(requires) and requires(value)):
                     for slot, transform in values.items():
@@ -80,7 +76,7 @@ class Connectable(object):
                                                                                        str(signal)))
             return
 
-        if self.connections is None:
+        if not hasattr(self, 'connections'):
             self.connections = {}
         connection = self.connections.setdefault(signal, {})
         connection = connection.setdefault(requires, {})
@@ -102,7 +98,7 @@ class Connectable(object):
         elif signal:
             self.connections.pop(signal, None)
         else:
-            self.connections = None
+            delattr(self, 'connections')
 
 
 def accept_arguments(method, number_of_arguments=1):
