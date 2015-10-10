@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/github/license/mashape/apistatus.svg)](https://pypi.python.org/pypi/connectable/)
 [![Join the chat at https://gitter.im/timothycrosley/connectable](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/timothycrosley/connectable?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
- simple, yet powerful, implementation of QTs signal / slots pattern for Python3
+A simple, yet powerful, implementation of QT's signal / slots pattern for Python3
 
 [![connectable Example](https://raw.github.com/timothycrosley/connectable/develop/example.gif)](https://github.com/timothycrosley/connectable/blob/develop/examples/example.py)
 
