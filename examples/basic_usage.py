@@ -2,7 +2,7 @@ from connectable import Connectable
 
 
 class Person(Connectable):
-    signals = ('says_hello')
+    signals = ('says_hello', )
 
     def __init__(self, name):
         self.name = name
@@ -13,7 +13,6 @@ class Person(Connectable):
         else:
             print("Hi! This is {name}".format(name=self.name))
         self.emit('says_hello', self.name)
-
 
 
 speaker = Person('Tim')

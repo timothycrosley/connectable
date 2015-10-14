@@ -20,40 +20,60 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
+import glob
+import os
 import subprocess
 import sys
+from os import path
 
-try:
-    from setuptools import setup
-    from setuptools.command.test import test as TestCommand
+from setuptools import Extension, find_packages, setup
+from setuptools.command.test import test as TestCommand
 
-    class PyTest(TestCommand):
-        extra_kwargs = {'tests_require': ['pytest', 'mock']}
+MYDIR = path.abspath(os.path.dirname(__file__))
+JYTHON = 'java' in sys.platform
+PYPY = bool(getattr(sys, 'pypy_version_info', False))
+CYTHON = False
+if not PYPY and not JYTHON:
+    try:
+        from Cython.Distutils import build_ext
+        CYTHON = True
+    except ImportError:
+        pass
 
-        def finalize_options(self):
-            TestCommand.finalize_options(self)
-            self.test_args = []
-            self.test_suite = True
+cmdclass = {}
+ext_modules = []
+if CYTHON:
+    def list_modules(dirname):
+        filenames = glob.glob(path.join(dirname, '*.py'))
 
-        def run_tests(self):
-            import pytest
-            sys.exit(pytest.main(self.test_args))
+        module_names = []
+        for name in filenames:
+            module, ext = path.splitext(path.basename(name))
+            if module != '__init__':
+                module_names.append(module)
 
-except ImportError:
-    from distutils.core import setup, Command
+        return module_names
 
-    class PyTest(Command):
-        extra_kwargs = {}
-        user_options = []
+    ext_modules = [
+        Extension('connectable.' + ext, [path.join('connectable', ext + '.py')])
+        for ext in list_modules(path.join(MYDIR, 'connectable'))]
+    cmdclass['build_ext'] = build_ext
 
-        def initialize_options(self):
-            pass
 
-        def finalize_options(self):
-            pass
+class PyTest(TestCommand):
+    extra_kwargs = {'tests_require': ['pytest', 'mock']}
 
-        def run(self):
-            raise SystemExit(subprocess.call([sys.executable, 'runtests.py']))
+    def finalize_options(self):
+        TestCommand.finalize_options(self)
+        self.test_args = []
+        self.test_suite = True
+
+    def run_tests(self):
+        import pytest
+        sys.exit(pytest.main(self.test_args))
+
+
+cmdclass['test'] = PyTest
 
 try:
    import pypandoc
@@ -62,22 +82,18 @@ except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
 setup(name='connectable',
-      version='1.0.0',
+      version='1.1.0',
       description='A simple, yet powerful, implementation of QTs signal / slots pattern for Python3',
       long_description=readme,
       author='Timothy Crosley',
       author_email='timothy.crosley@gmail.com',
       url='https://github.com/timothycrosley/connectable',
       license="MIT",
-      # entry_points={
-      #  'console_scripts': [
-      #      'connectable = connectable:run.terminal',
-      #  ]
-      #},
       packages=['connectable'],
       requires=[],
       install_requires=[],
-      cmdclass={'test': PyTest},
+      cmdclass=cmdclass,
+      ext_modules=ext_modules,
       keywords='Python, Python3',
       classifiers=['Development Status :: 6 - Mature',
                    'Intended Audience :: Developers',

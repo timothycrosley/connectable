@@ -13,8 +13,9 @@ Connectable enables you to quickly and effeciently attach actions preformed by o
 ```py
 from connectable import Connectable
 
+
 class Person(Connectable):
-    signals = ('says_hello')
+    signals = ('says_hello', )
 
     def __init__(self, name):
         self.name = name
@@ -25,6 +26,7 @@ class Person(Connectable):
         else:
             print("Hi! This is {name}".format(name=self.name))
         self.emit('says_hello', self.name)
+
 
 speaker = Person('Tim')
 room = (Person('Amanda'), Person('Bob'), Person('Ted'), Person('Sue'))
@@ -68,7 +70,7 @@ def action(self):
     self.emit('something_changed', 'Forever.')
     # or simply self.emit('something_changed')
 ```
-Then any Python method or function can be connected that action, via the connect command:
+Then any Python method or function can be connected to that action, via the connect command:
 ```py
 my_object = MyConnectable()
 my_object.connect('something_changed', print)
@@ -79,7 +81,7 @@ If you emitted a value and the provided slot method accepts one it will be passe
 Unique Features of Connectable
 ===================
 
-Connectable adds some additional benifits over a vanilla port of the signal / slots pattern
+Connectable adds some additional benefits over a vanilla port of the signal / slots pattern
 - You can pass a custom value to the slot:
 ```py
     order_button.connect('clicked', status_label.set_text, 'Order Submitted Succesfully')
