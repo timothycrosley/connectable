@@ -65,3 +65,6 @@ lib64
 pyvenv.cfg
 share/
 
+# Cython
+.c
+
