@@ -82,7 +82,7 @@ except (IOError, ImportError, OSError, RuntimeError):
    readme = ''
 
 setup(name='connectable',
-      version='1.0.0',
+      version='1.1.0',
       description='A simple, yet powerful, implementation of QTs signal / slots pattern for Python3',
       long_description=readme,
       author='Timothy Crosley',
