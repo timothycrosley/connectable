@@ -66,5 +66,5 @@ pyvenv.cfg
 share/
 
 # Cython
-.c
+*.c
 
