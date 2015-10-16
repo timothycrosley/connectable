@@ -60,7 +60,7 @@ To make an object Connectable, all you have to do is inherit from the Connectabl
 ```py
 from connectable import Connectable
 
-MyConnectable(Connectable):
+class MyConnectable(Connectable):
     signals = ['something_changed']
 ```
 Then to signal any of your defined signals, simply emit the signal name, optionally with a value:
