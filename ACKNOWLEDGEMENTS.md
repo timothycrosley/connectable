@@ -12,7 +12,7 @@ Code Contributors
 
 Documenters
 ===================
--
+- Eric Dill (@ericdill)
 
 --------------------------------------------
 
