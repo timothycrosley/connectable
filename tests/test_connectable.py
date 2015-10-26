@@ -26,7 +26,7 @@ function_called = False
 
 class Value(Connectable):
     '''A basic example connectable object, that can be used for testing'''
-    signals = ['valueChanged']
+    signals = ('valueChanged', )
 
     def __init__(self, value):
         super(Value, self).__init__()
@@ -141,3 +141,20 @@ def test_disconnect():
     value1.disconnect('valueChanged')
     value1.set_value('Still Wont')
     assert value2.value == 'It changes the value'
+
+
+class test_automatic_signal_inheritance():
+    '''A test to ensure signals auto inherit from parent classes'''
+    class FirstInheritance(Value):
+        signals = ('signalOne', )
+
+
+    class SecondInheritance(FirstInheritance):
+        signals = ('signalTwo', )
+
+
+    first = FirstInheritance('value')
+    second = SecondInheritance('value')
+
+    assert first.signals == ('valueChanged', 'signalOne')
+    assert second.signals == ('valueChanged', 'signalOne', 'signalTwo')
