@@ -21,7 +21,17 @@
 '''
 
 
-class Connectable(object):
+class CombineSignals(type):
+    '''A meta class to automatically combine signals from base classes'''
+
+    def __new__(metaclass, name, parents, class_dict, *kargs, **kwargs):
+        if 'signals' in class_dict and parents and getattr(parents[0], 'signals', None):
+            class_dict['signals'] = parents[0].signals + class_dict['signals']
+
+        return super(CombineSignals, metaclass).__new__(metaclass, name, parents, class_dict, *kargs, **kwargs)
+
+
+class Connectable(object, metaclass=CombineSignals):
     __slots__ = ("connections")
     signals = ()
 
