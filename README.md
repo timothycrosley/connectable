@@ -1,4 +1,4 @@
-![connectable](https://raw.github.com/timothycrosley/connectable/develop/logo.png)
+![connectable](https://raw.github.com/timothycrosley/connectable/develop/logo.png) 
 A simple, yet powerful, implementation of QT's signal / slots pattern for Python3
 ===================
 
