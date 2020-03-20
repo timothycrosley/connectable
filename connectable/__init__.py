@@ -19,6 +19,6 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFT
 OTHER DEALINGS IN THE SOFTWARE.
 
 """
-from .base import Connectable
+from .base import Connectable, UndefinedSignal
 
-__version__ = "1.2.1"
+__version__ = "1.2.2"

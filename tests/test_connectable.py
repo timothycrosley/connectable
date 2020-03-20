@@ -19,7 +19,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 '''
-from connectable import Connectable
+import pytest
+from connectable import Connectable, UndefinedSignal
 
 function_called = False
 
@@ -56,7 +57,8 @@ def test_incorrect_signal_slot_connections():
     assert value1.emit("fake signal") == True
 
     #connect using fake signal
-    assert value1.connect("fake signal", value1.set_value) is None
+    with pytest.raises(UndefinedSignal):
+        assert value1.connect("fake signal", value1.set_value) is None
 
 
 def test_connect_without_condition():

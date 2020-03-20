@@ -12,3 +12,6 @@ Changelog
 
 ### 1.2.1
 - Fixed automatic signal inheritance for multiple base classes
+
+### 1.2.2
+- Changed connect to raise error instead of warning upon undefined signal

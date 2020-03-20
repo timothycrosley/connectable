@@ -15,6 +15,10 @@ class CombineSignals(type):
         return super(CombineSignals, metaclass).__new__(metaclass, name, parents, class_dict, *kargs, **kwargs)
 
 
+class UndefinedSignal(Exception):
+    pass
+
+
 class Connectable(object, metaclass=CombineSignals):
     __slots__ = ("connections")
     signals = ()
@@ -66,9 +70,8 @@ class Connectable(object, metaclass=CombineSignals):
            condition: only call the slot if the value emitted matches the required value or calling required returns True
         """
         if not signal in self.signals:
-            print("WARNING: {0} is trying to connect a slot to an undefined signal: {1}".format(self.__class__.__name__,
-                                                                                       str(signal)))
-            return
+            raise UndefinedSignal("{0} is trying to connect a slot to an undefined signal: {1}"
+                                  .format(self.__class__.__name__, str(signal)))
 
         if not hasattr(self, 'connections'):
             self.connections = {}
