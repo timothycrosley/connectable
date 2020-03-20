@@ -9,8 +9,8 @@ class CombineSignals(type):
     '''A meta class to automatically combine signals from base classes'''
 
     def __new__(metaclass, name, parents, class_dict, *kargs, **kwargs):
-        if 'signals' in class_dict and parents and getattr(parents[0], 'signals', None):
-            class_dict['signals'] = parents[0].signals + class_dict['signals']
+        class_dict['signals'] = set(s for p in parents for s in getattr(p, 'signals', ())) | \
+                set(class_dict.get('signals', ()))
 
         return super(CombineSignals, metaclass).__new__(metaclass, name, parents, class_dict, *kargs, **kwargs)
 

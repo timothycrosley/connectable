@@ -10,3 +10,5 @@ Changelog
 ### 1.2.0
 - Added support for automatic signal inheritance from base classes
 
+### 1.2.1
+- Fixed automatic signal inheritance for multiple base classes

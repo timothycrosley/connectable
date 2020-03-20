@@ -21,4 +21,4 @@ OTHER DEALINGS IN THE SOFTWARE.
 """
 from .base import Connectable
 
-__version__ = "1.2.0"
+__version__ = "1.2.1"

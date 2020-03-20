@@ -143,7 +143,7 @@ def test_disconnect():
     assert value2.value == 'It changes the value'
 
 
-class test_automatic_signal_inheritance():
+def test_automatic_signal_inheritance():
     '''A test to ensure signals auto inherit from parent classes'''
     class FirstInheritance(Value):
         signals = ('signalOne', )
@@ -156,5 +156,28 @@ class test_automatic_signal_inheritance():
     first = FirstInheritance('value')
     second = SecondInheritance('value')
 
-    assert first.signals == ('valueChanged', 'signalOne')
-    assert second.signals == ('valueChanged', 'signalOne', 'signalTwo')
+    assert first.signals == set(('valueChanged', 'signalOne'))
+    assert second.signals == set(('valueChanged', 'signalOne', 'signalTwo'))
+
+
+def test_automatic_signal_multiple_inheritance():
+    '''A test to ensure signals auto inherit from multiple parent classes'''
+    class FirstInheritance(Value):
+        signals = ('signalOne', )
+
+
+    class SecondInheritance(Value):
+        signals = ('signalTwo', )
+
+
+    class ThirdInheritance(FirstInheritance, SecondInheritance):
+        signals = ('signalThree', )
+
+
+    first = FirstInheritance('value')
+    second = SecondInheritance('value')
+    third = ThirdInheritance('value')
+
+    assert first.signals == set(('valueChanged', 'signalOne'))
+    assert second.signals == set(('valueChanged', 'signalTwo'))
+    assert third.signals == set(('valueChanged', 'signalOne', 'signalTwo', 'signalThree'))
