@@ -9,13 +9,21 @@ class CombineSignals(type):
     '''A meta class to automatically combine signals from base classes'''
 
     def __new__(metaclass, name, parents, class_dict, *kargs, **kwargs):
-        if 'signals' in class_dict and parents and getattr(parents[0], 'signals', None):
-            class_dict['signals'] = parents[0].signals + class_dict['signals']
+        class_dict['signals'] = set(s for p in parents for s in getattr(p, 'signals', ())) | \
+                set(class_dict.get('signals', ()))
 
         return super(CombineSignals, metaclass).__new__(metaclass, name, parents, class_dict, *kargs, **kwargs)
 
 
-class Connectable(object, metaclass=CombineSignals):
+class ConnectableMeta(CombineSignals):
+    pass
+
+
+class UndefinedSignal(Exception):
+    pass
+
+
+class Connectable(object, metaclass=ConnectableMeta):
     __slots__ = ("connections")
     signals = ()
 
@@ -66,9 +74,8 @@ class Connectable(object, metaclass=CombineSignals):
            condition: only call the slot if the value emitted matches the required value or calling required returns True
         """
         if not signal in self.signals:
-            print("WARNING: {0} is trying to connect a slot to an undefined signal: {1}".format(self.__class__.__name__,
-                                                                                       str(signal)))
-            return
+            raise UndefinedSignal("{0} is trying to connect a slot to an undefined signal: {1}"
+                                  .format(self.__class__.__name__, str(signal)))
 
         if not hasattr(self, 'connections'):
             self.connections = {}

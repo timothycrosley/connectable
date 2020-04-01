@@ -19,7 +19,8 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 '''
-from connectable import Connectable
+import pytest
+from connectable import Connectable, UndefinedSignal
 
 function_called = False
 
@@ -56,7 +57,8 @@ def test_incorrect_signal_slot_connections():
     assert value1.emit("fake signal") == True
 
     #connect using fake signal
-    assert value1.connect("fake signal", value1.set_value) is None
+    with pytest.raises(UndefinedSignal):
+        assert value1.connect("fake signal", value1.set_value) is None
 
 
 def test_connect_without_condition():
@@ -143,7 +145,7 @@ def test_disconnect():
     assert value2.value == 'It changes the value'
 
 
-class test_automatic_signal_inheritance():
+def test_automatic_signal_inheritance():
     '''A test to ensure signals auto inherit from parent classes'''
     class FirstInheritance(Value):
         signals = ('signalOne', )
@@ -156,5 +158,28 @@ class test_automatic_signal_inheritance():
     first = FirstInheritance('value')
     second = SecondInheritance('value')
 
-    assert first.signals == ('valueChanged', 'signalOne')
-    assert second.signals == ('valueChanged', 'signalOne', 'signalTwo')
+    assert first.signals == set(('valueChanged', 'signalOne'))
+    assert second.signals == set(('valueChanged', 'signalOne', 'signalTwo'))
+
+
+def test_automatic_signal_multiple_inheritance():
+    '''A test to ensure signals auto inherit from multiple parent classes'''
+    class FirstInheritance(Value):
+        signals = ('signalOne', )
+
+
+    class SecondInheritance(Value):
+        signals = ('signalTwo', )
+
+
+    class ThirdInheritance(FirstInheritance, SecondInheritance):
+        signals = ('signalThree', )
+
+
+    first = FirstInheritance('value')
+    second = SecondInheritance('value')
+    third = ThirdInheritance('value')
+
+    assert first.signals == set(('valueChanged', 'signalOne'))
+    assert second.signals == set(('valueChanged', 'signalTwo'))
+    assert third.signals == set(('valueChanged', 'signalOne', 'signalTwo', 'signalThree'))
