@@ -15,3 +15,6 @@ Changelog
 
 ### 1.2.2
 - Changed connect to raise error instead of warning upon undefined signal
+
+### 1.2.3
+- Added explicit metaclass for Connectable needed for resolving metaclass conflicts

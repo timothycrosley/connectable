@@ -15,11 +15,15 @@ class CombineSignals(type):
         return super(CombineSignals, metaclass).__new__(metaclass, name, parents, class_dict, *kargs, **kwargs)
 
 
+class ConnectableMeta(CombineSignals):
+    pass
+
+
 class UndefinedSignal(Exception):
     pass
 
 
-class Connectable(object, metaclass=CombineSignals):
+class Connectable(object, metaclass=ConnectableMeta):
     __slots__ = ("connections")
     signals = ()
 
